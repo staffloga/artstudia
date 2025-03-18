@@ -14,7 +14,7 @@
         <h1 class="text-center">Админ-панель</h1>
         <!-- Кнопка возврата на главную -->
         <div class="text-center mb-4">
-            <a href="../../index.html" class="btn btn-secondary">Вернуться на главную</a>
+            <a href="../index.html" class="btn btn-secondary">Вернуться на главную</a>
         </div>
         <!-- Кнопка выхода -->
         <div class="text-center mb-4">
@@ -32,14 +32,14 @@
         // Функция для выхода
         function logout() {
             localStorage.removeItem('isAdmin'); // Очищаем флаг авторизации
-            window.location.href = '../../index.html'; // Перенаправляем на главную страницу
+            window.location.href = '../index.html'; // Перенаправляем на главную страницу
         }
 
         // Проверка авторизации
         document.addEventListener('DOMContentLoaded', function () {
             const isAdmin = localStorage.getItem('isAdmin') === 'true';
             if (!isAdmin) {
-                window.location.href = '../../index.html'; // Перенаправляем, если пользователь не авторизован
+                window.location.href = '../index.html'; // Перенаправляем, если пользователь не авторизован
             }
         });
     </script>
