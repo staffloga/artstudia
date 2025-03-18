@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление галереей</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/styles.css">
+    <style>
+        /* Стили для миниатюр */
+        .thumbnail-img {
+            width: 100px;
+            /* Ширина миниатюры */
+            height: 100px;
+            /* Высота миниатюры */
+            object-fit: cover;
+            /* Сохраняем пропорции изображения */
+            border-radius: 5px;
+            /* Закругленные углы */
+            margin-bottom: 10px;
+            /* Отступ снизу */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Управление галереей</h1>
+        <!-- Кнопка возврата в админ-панель -->
+        <div class="text-center mb-4">
+            <a href="index.html" class="btn btn-secondary">Вернуться в админ-панель</a>
+        </div>
+        <form id="galleryForm" class="mt-4">
+            <div class="mb-3">
+                <label for="imageFile" class="form-label">Загрузить фото:</label>
+                <input type="file" class="form-control" id="imageFile" accept="image/*" required>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Описание:</label>
+                <textarea class="form-control" id="description" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="date" class="form-label">Дата:</label>
+                <input type="date" class="form-control" id="date" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Добавить изображение</button>
+        </form>
+        <!-- Список изображений -->
+        <div id="galleryList" class="row mt-4"></div>
+    </div>
+
+    <script>
+        // Функция для отображения списка изображений
+        function loadGallery() {
+            const galleryList = document.getElementById('galleryList');
+            const gallery = JSON.parse(localStorage.getItem('gallery')) || [];
+            galleryList.innerHTML = '';
+
+            gallery.forEach((item, index) => {
+                const galleryItem = document.createElement('div');
+                galleryItem.className = 'col-md-3 mb-4';
+                galleryItem.innerHTML = `
+                    <div class="card h-100">
+                        <img src="${item.imageUrl}" class="thumbnail-img" alt="${item.description}">
+                        <div class="card-body">
+                            <h5 class="card-title">${item.description}</h5>
+                            <small class="text-muted">Дата: ${item.date}</small>
+                            <button onclick="deleteGalleryItem(${index})" class="btn btn-danger btn-sm mt-2">Удалить</button>
+                        </div>
+                    </div>
+                `;
+                galleryList.appendChild(galleryItem);
+            });
+        }
+
+        // Функция для удаления изображения
+        function deleteGalleryItem(index) {
+            let gallery = JSON.parse(localStorage.getItem('gallery')) || [];
+            gallery.splice(index, 1); // Удаляем изображение по индексу
+            localStorage.setItem('gallery', JSON.stringify(gallery));
+            loadGallery(); // Перезагружаем список изображений
+        }
+
+        // Сохранение нового изображения
+        document.getElementById('galleryForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const imageFile = document.getElementById('imageFile').files[0];
+            const description = document.getElementById('description').value;
+            const date = document.getElementById('date').value;
+
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const galleryItem = {
+                        imageUrl: e.target.result,
+                        description: description,
+                        date: date
+                    };
+
+                    let gallery = JSON.parse(localStorage.getItem('gallery')) || [];
+                    gallery.push(galleryItem);
+                    localStorage.setItem('gallery', JSON.stringify(gallery));
+
+                    alert('Изображение добавлено!');
+                    loadGallery(); // Перезагружаем список изображений
+                };
+                reader.readAsDataURL(imageFile); // Преобразуем файл в Data URL
+            }
+        });
+
+        // Загружаем галерею при загрузке страницы
+        document.addEventListener('DOMContentLoaded', loadGallery);
+    </script>
+</body>
+
+</html>

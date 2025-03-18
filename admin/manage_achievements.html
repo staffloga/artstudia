@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление достижениями</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/styles.css">
+    <style>
+        /* Стили для миниатюр */
+        .thumbnail-img {
+            width: 100px;
+            /* Ширина миниатюры */
+            height: 100px;
+            /* Высота миниатюры */
+            object-fit: cover;
+            /* Сохраняем пропорции изображения */
+            border-radius: 5px;
+            /* Закругленные углы */
+            margin-bottom: 10px;
+            /* Отступ снизу */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Управление достижениями</h1>
+        <!-- Кнопка возврата в админ-панель -->
+        <div class="text-center mb-4">
+            <a href="index.html" class="btn btn-secondary">Вернуться в админ-панель</a>
+        </div>
+        <form id="achievementsForm" class="mt-4">
+            <div class="mb-3">
+                <label for="achievementImageFile" class="form-label">Загрузить фото:</label>
+                <input type="file" class="form-control" id="achievementImageFile" accept="image/*" required>
+            </div>
+            <div class="mb-3">
+                <label for="achievementDescription" class="form-label">Описание:</label>
+                <textarea class="form-control" id="achievementDescription" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="achievementDate" class="form-label">Дата:</label>
+                <input type="date" class="form-control" id="achievementDate" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Добавить достижение</button>
+        </form>
+        <!-- Список достижений -->
+        <div id="achievementsList" class="row mt-4"></div>
+    </div>
+
+    <script>
+        // Функция для отображения списка достижений
+        function loadAchievements() {
+            const achievementsList = document.getElementById('achievementsList');
+            const achievements = JSON.parse(localStorage.getItem('achievements')) || [];
+            achievementsList.innerHTML = '';
+
+            achievements.forEach((item, index) => {
+                const achievementItem = document.createElement('div');
+                achievementItem.className = 'col-md-3 mb-4';
+                achievementItem.innerHTML = `
+                    <div class="card h-100">
+                        <img src="${item.imageUrl}" class="thumbnail-img" alt="${item.description}">
+                        <div class="card-body">
+                            <h5 class="card-title">${item.description}</h5>
+                            <small class="text-muted">Дата: ${item.date}</small>
+                            <button onclick="deleteAchievement(${index})" class="btn btn-danger btn-sm mt-2">Удалить</button>
+                        </div>
+                    </div>
+                `;
+                achievementsList.appendChild(achievementItem);
+            });
+        }
+
+        // Функция для удаления достижения
+        function deleteAchievement(index) {
+            let achievements = JSON.parse(localStorage.getItem('achievements')) || [];
+            achievements.splice(index, 1); // Удаляем достижение по индексу
+            localStorage.setItem('achievements', JSON.stringify(achievements));
+            loadAchievements(); // Перезагружаем список достижений
+        }
+
+        // Сохранение нового достижения
+        document.getElementById('achievementsForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const imageFile = document.getElementById('achievementImageFile').files[0];
+            const description = document.getElementById('achievementDescription').value;
+            const date = document.getElementById('achievementDate').value;
+
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const achievement = {
+                        imageUrl: e.target.result,
+                        description: description,
+                        date: date
+                    };
+
+                    let achievements = JSON.parse(localStorage.getItem('achievements')) || [];
+                    achievements.push(achievement);
+                    localStorage.setItem('achievements', JSON.stringify(achievements));
+
+                    alert('Достижение добавлено!');
+                    loadAchievements(); // Перезагружаем список достижений
+                };
+                reader.readAsDataURL(imageFile); // Преобразуем файл в Data URL
+            }
+        });
+
+        // Загружаем достижения при загрузке страницы
+        document.addEventListener('DOMContentLoaded', loadAchievements);
+    </script>
+</body>
+
+</html>

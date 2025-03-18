@@ -81,6 +81,7 @@ h3 {
 .btn-primary:hover {
     background-color: #0056b3;
 }
+
 /* Стили для секции описания программы */
 .program-description {
     background-color: #fff;
@@ -128,4 +129,29 @@ h3 {
 
 .program-description .text-primary {
     color: #007bff !important;
+}
+
+.nav-link.login {
+    color: #ffcc00;
+    /* Желтый цвет для вкладки "Вход" */
+    font-weight: bold;
+}
+
+/* Стили для иконок */
+.fa-2x {
+    font-size: 2rem;
+}
+
+.text-primary {
+    color: #007bff !important;
+}
+
+/* Стили для ссылок */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+a:hover {
+    color: #0056b3;
 }

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление расписанием</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/styles.css">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Управление расписанием</h1>
+        <!-- Кнопка возврата в админ-панель -->
+        <div class="text-center mb-4">
+            <a href="index.html" class="btn btn-secondary">Вернуться в админ-панель</a>
+        </div>
+        <form id="scheduleForm" class="mt-4">
+            <div class="mb-3">
+                <label for="program" class="form-label">Программа:</label>
+                <input type="text" class="form-control" id="program" required>
+            </div>
+            <div class="mb-3">
+                <label for="group" class="form-label">Группа:</label>
+                <input type="text" class="form-control" id="group" required>
+            </div>
+            <div class="mb-3">
+                <label for="monday" class="form-label">Понедельник:</label>
+                <input type="text" class="form-control" id="monday">
+            </div>
+            <div class="mb-3">
+                <label for="tuesday" class="form-label">Вторник:</label>
+                <input type="text" class="form-control" id="tuesday">
+            </div>
+            <div class="mb-3">
+                <label for="wednesday" class="form-label">Среда:</label>
+                <input type="text" class="form-control" id="wednesday">
+            </div>
+            <div class="mb-3">
+                <label for="thursday" class="form-label">Четверг:</label>
+                <input type="text" class="form-control" id="thursday">
+            </div>
+            <div class="mb-3">
+                <label for="friday" class="form-label">Пятница:</label>
+                <input type="text" class="form-control" id="friday">
+            </div>
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        </form>
+        <!-- Список расписаний -->
+        <div id="scheduleList" class="mt-4"></div>
+    </div>
+
+    <script>
+        // Загрузка расписаний при открытии страницы
+        function loadSchedules() {
+            const scheduleList = document.getElementById('scheduleList');
+            const schedules = JSON.parse(localStorage.getItem('schedules')) || [];
+            scheduleList.innerHTML = '';
+
+            schedules.forEach((schedule, index) => {
+                const scheduleItem = document.createElement('div');
+                scheduleItem.className = 'card mb-3';
+                scheduleItem.innerHTML = `
+                    <div class="card-body">
+                        <h5 class="card-title">${schedule.program} (${schedule.group})</h5>
+                        <p class="card-text">Понедельник: ${schedule.monday}</p>
+                        <p class="card-text">Вторник: ${schedule.tuesday}</p>
+                        <p class="card-text">Среда: ${schedule.wednesday}</p>
+                        <p class="card-text">Четверг: ${schedule.thursday}</p>
+                        <p class="card-text">Пятница: ${schedule.friday}</p>
+                        <button onclick="deleteSchedule(${index})" class="btn btn-danger btn-sm">Удалить</button>
+                    </div>
+                `;
+                scheduleList.appendChild(scheduleItem);
+            });
+        }
+
+        // Удаление расписания
+        function deleteSchedule(index) {
+            let schedules = JSON.parse(localStorage.getItem('schedules')) || [];
+            schedules.splice(index, 1); // Удаляем расписание по индексу
+            localStorage.setItem('schedules', JSON.stringify(schedules));
+            loadSchedules(); // Перезагружаем список расписаний
+        }
+
+        // Сохранение нового расписания
+        document.getElementById('scheduleForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const program = document.getElementById('program').value;
+            const group = document.getElementById('group').value;
+            const monday = document.getElementById('monday').value;
+            const tuesday = document.getElementById('tuesday').value;
+            const wednesday = document.getElementById('wednesday').value;
+            const thursday = document.getElementById('thursday').value;
+            const friday = document.getElementById('friday').value;
+
+            const schedule = {
+                program: program,
+                group: group,
+                monday: monday,
+                tuesday: tuesday,
+                wednesday: wednesday,
+                thursday: thursday,
+                friday: friday
+            };
+
+            let schedules = JSON.parse(localStorage.getItem('schedules')) || [];
+            schedules.push(schedule);
+            localStorage.setItem('schedules', JSON.stringify(schedules));
+
+            alert('Расписание сохранено!');
+            loadSchedules(); // Перезагружаем список расписаний
+        });
+
+        // Загружаем расписания при загрузке страницы
+        document.addEventListener('DOMContentLoaded', loadSchedules);
+    </script>
+</body>
+
+</html>
