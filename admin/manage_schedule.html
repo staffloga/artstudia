@@ -17,6 +17,8 @@
             <a href="index.html" class="btn btn-secondary">Вернуться в админ-панель</a>
         </div>
         <form id="scheduleForm" class="mt-4">
+            <input type="hidden" id="editIndex" value="-1">
+            <!-- Скрытое поле для хранения индекса редактируемой записи -->
             <div class="mb-3">
                 <label for="program" class="form-label">Программа:</label>
                 <input type="text" class="form-control" id="program" required>
@@ -46,6 +48,7 @@
                 <input type="text" class="form-control" id="friday">
             </div>
             <button type="submit" class="btn btn-primary">Сохранить</button>
+            <button type="button" onclick="clearForm()" class="btn btn-secondary">Очистить форму</button>
         </form>
         <!-- Список расписаний -->
         <div id="scheduleList" class="mt-4"></div>
@@ -69,6 +72,7 @@
                         <p class="card-text">Среда: ${schedule.wednesday}</p>
                         <p class="card-text">Четверг: ${schedule.thursday}</p>
                         <p class="card-text">Пятница: ${schedule.friday}</p>
+                        <button onclick="editSchedule(${index})" class="btn btn-warning btn-sm">Редактировать</button>
                         <button onclick="deleteSchedule(${index})" class="btn btn-danger btn-sm">Удалить</button>
                     </div>
                 `;
@@ -84,7 +88,31 @@
             loadSchedules(); // Перезагружаем список расписаний
         }
 
-        // Сохранение нового расписания
+        // Редактирование расписания
+        function editSchedule(index) {
+            const schedules = JSON.parse(localStorage.getItem('schedules')) || [];
+            const schedule = schedules[index];
+
+            // Заполняем форму данными для редактирования
+            document.getElementById('program').value = schedule.program;
+            document.getElementById('group').value = schedule.group;
+            document.getElementById('monday').value = schedule.monday;
+            document.getElementById('tuesday').value = schedule.tuesday;
+            document.getElementById('wednesday').value = schedule.wednesday;
+            document.getElementById('thursday').value = schedule.thursday;
+            document.getElementById('friday').value = schedule.friday;
+
+            // Устанавливаем индекс редактируемой записи
+            document.getElementById('editIndex').value = index;
+        }
+
+        // Очистка формы
+        function clearForm() {
+            document.getElementById('scheduleForm').reset();
+            document.getElementById('editIndex').value = -1; // Сбрасываем индекс редактирования
+        }
+
+        // Сохранение нового или обновление существующего расписания
         document.getElementById('scheduleForm').addEventListener('submit', function (event) {
             event.preventDefault();
             const program = document.getElementById('program').value;
@@ -106,10 +134,19 @@
             };
 
             let schedules = JSON.parse(localStorage.getItem('schedules')) || [];
-            schedules.push(schedule);
-            localStorage.setItem('schedules', JSON.stringify(schedules));
+            const editIndex = document.getElementById('editIndex').value;
 
+            if (editIndex >= 0) {
+                // Редактирование существующей записи
+                schedules[editIndex] = schedule;
+            } else {
+                // Добавление новой записи
+                schedules.push(schedule);
+            }
+
+            localStorage.setItem('schedules', JSON.stringify(schedules));
             alert('Расписание сохранено!');
+            clearForm(); // Очищаем форму
             loadSchedules(); // Перезагружаем список расписаний
         });
 
